@@ -8,6 +8,4 @@ export default defineConfig({
             refresh: true,
         }),
     ],
-
-    plugins: [require("daisyui")],
 });
