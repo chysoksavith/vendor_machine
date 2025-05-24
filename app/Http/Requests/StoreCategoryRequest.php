@@ -22,11 +22,11 @@ class StoreCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:categories,name',
             'description' => 'nullable|string',
-            'parent_id' => 'nullable|exists:categories,id',
             'is_active' => 'boolean',
-            'order' => 'integer|min:0',
+            'meta_title' => 'nullable|string|max:255',
+            'meta_description' => 'nullable|string|max:500'
         ];
     }
 }

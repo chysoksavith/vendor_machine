@@ -20,16 +20,12 @@ class UpdateCategoryRequest extends StoreCategoryRequest
      */
     public function rules(): array
     {
-        $rules = parent::rules();
-        $rules['parent_id'] = [
-            'nullable',
-            'exists:categories,id',
-            function ($attribute, $value, $fail) {
-                if ($value == $this->category->id) {
-                    $fail('A category cannot be its own parent.');
-                }
-            }
+        return [
+            'name' => 'required|string|max:255|unique:categories,name,' . $this->category->id,
+            'description' => 'nullable|string',
+            'is_active' => 'boolean',
+            'meta_title' => 'nullable|string|max:255',
+            'meta_description' => 'nullable|string|max:500'
         ];
-        return $rules;
     }
 }

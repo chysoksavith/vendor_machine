@@ -3,31 +3,78 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCategoryRequest;
-use App\Repositories\CategoryRepository;
-use Illuminate\Http\RedirectResponse;
+use App\Http\Requests\UpdateCategoryRequest;
+use App\Models\Category;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
 
 class CategoryController extends Controller
 {
-    public function __construct(private CategoryRepository $categoryRepository) {}
-
-    public function index(): View
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
     {
-        $categories = $this->categoryRepository->all();
+        $categories = Category::orderBy('position')->get();
         return view('admin.categories.index', compact('categories'));
     }
-    public function create(): View
-    {
-        $parents = $this->categoryRepository->getParentOptions();
 
-        return view('admin.categories.create', compact('parents'));
-    }
-    public function store(StoreCategoryRequest $request): RedirectResponse
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
     {
-  
-        $this->categoryRepository->create($request->validated());
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(StoreCategoryRequest $request)
+    {
+
+        Category::create($request->validated());
         return redirect()->route('admin.categories.index')
-            ->with('success', 'Category created successfully.');
+            ->with('success', 'Category created successfully');
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Category $category)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Category $category)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(UpdateCategoryRequest $request, Category $category)
+    {
+        $category->update($request->validated());
+        return redirect()->route('categories.index')
+            ->with('success', 'Category updated successfully');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Category $category)
+    {
+        $category->delete();
+        return redirect()->route('admin.categories.index')
+            ->with('success', 'Category deleted successfully');
+    }
+    public function toggleStatus(Category $category)
+    {
+        $category->update(['is_active' => !$category->is_active]);
+        return back()->with('success', 'Category status updated');
     }
 }

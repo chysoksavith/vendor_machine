@@ -1,107 +1,196 @@
 <x-app-layout>
-    <div class="container m-auto">
-        <div class="card bg-base-100 shadow-lg">
-            <div class="card-body">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold">Categories</h2>
-                    <a href="{{ route('admin.categories.create') }}" class="btn btn-primary">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20"
-                            fill="currentColor">
-                            <path fill-rule="evenodd"
-                                d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
-                                clip-rule="evenodd" />
-                        </svg>
-                        Add New
-                    </a>
-                </div>
-                {{-- alert message --}}
-                @if (session('success'))
-                    <div class="alert alert-success shadow-lg mb-6">
-                        <div>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6"
-                                fill="none" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <span>{{ session('success') }}</span>
-                        </div>
-                    </div>
-                @endif
+    <div class="container mx-auto px-4 py-4">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-2xl font-bold">Category Management</h1>
+            <button class="btn btn-primary" onclick="categoryModal.showModal()">
+                <i class="fas fa-plus mr-2"></i> Add Category
+            </button>
+        </div>
 
-                <div class="overflow-x-auto">
-                    <div class="table w-full">
-                        <table class="table w-full">
-                            <thead>
-                                <tr>
-                                    <th>No</th>
-                                    <th>Name</th>
-                                    <th>Parent</th>
-                                    <th>Status</th>
-                                    <th>Order</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($categories as $category)
-                                    <tr class="hover">
-                                        <td>{{ $category->id }}</td>
-                                        <td>{{ $category->name }}</td>
-                                        <td>{{ $category->parent?->name ?? '-' }}</td>
-                                        <td>
-                                            @if ($category->is_active)
-                                                <span class="badge badge-success gap-1">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
-                                                        viewBox="0 0 20 20" fill="currentColor">
-                                                        <path fill-rule="evenodd"
-                                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                                            clip-rule="evenodd" />
-                                                    </svg>
-                                                    Active
-                                                </span>
-                                            @else
-                                                <span class="badge badge-error gap-1">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
-                                                        viewBox="0 0 20 20" fill="currentColor">
-                                                        <path fill-rule="evenodd"
-                                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                                                            clip-rule="evenodd" />
-                                                    </svg>
-                                                    Inactive
-                                                </span>
-                                            @endif
-                                        </td>
-                                        <td>{{ $category->order }}</td>
-                                        <td class="flex gap-2">
-                                            <a href="{{ route('admin.categories.edit', $category) }}"
-                                                class="btn btn-sm btn-primary">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
-                                                    viewBox="0 0 20 20" fill="currentColor">
-                                                    <path
-                                                        d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                                                </svg>
-                                            </a>
-                                            <form action="{{ route('admin.categories.destroy', $category) }}"
-                                                method="POST">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-error"
-                                                    onclick="return confirm('Are you sure you want to delete this category?')">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
-                                                        viewBox="0 0 20 20" fill="currentColor">
-                                                        <path fill-rule="evenodd"
-                                                            d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                                                            clip-rule="evenodd" />
-                                                    </svg>
-                                                </button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+        {{-- Success Message --}}
+        @if (session('success'))
+            <div class="alert alert-success mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>{{ session('success') }}</span>
+            </div>
+        @endif
+
+        {{-- category table --}}
+        <div class="bg-base-100 rounded-lg shadow">
+            <div class="overflow-x-auto">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Position</th>
+                            <th>Name</th>
+                            <th>Slug</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($categories as $category)
+                            <tr>
+                                <td>{{ $category->position }}</td>
+                                <td>{{ $category->name }}</td>
+                                <td class="text-sm opacity-75">{{ $category->slug }}</td>
+                                <td>
+                                    <span class="badge {{ $category->is_active ? 'badge-success' : 'badge-error' }}">
+                                        {{ $category->is_active ? 'Active' : 'Inactive' }}
+                                    </span>
+                                </td>
+                                <td class="flex space-x-2">
+                                    <button class="btn btn-sm btn-outline"
+                                        onclick="editCategory({{ json_encode($category) }})">
+                                        Edit
+                                    </button>
+                                    <form action="{{ route('admin.categories.destroy', $category->id) }}"
+                                        method="POST">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-error">
+                                            Delete
+                                        </button>
+                                    </form>
+                                    <form action="{{ route('admin.categories.toggle-status', $category->id) }}"
+                                        method="POST">
+                                        @csrf
+                                        <button type="submit"
+                                            class="btn btn-sm {{ $category->is_active ? 'btn-warning' : 'btn-success' }}">
+                                            {{ $category->is_active ? 'Deactivate' : 'Activate' }}
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="text-center">
+                                    No categories found
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
+
+    {{-- category modal --}}
+    <dialog id="categoryModal" class="modal">
+        <div class="modal-box max-w-2xl">
+            <form method="dialog">
+                <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+            </form>
+            <h3 class="font-bold text-lg" id="modalTitle">Add New Category</h3>
+
+            <form id="categoryForm" method="POST">
+                @csrf
+                <input type="hidden" id="formMethod" name="_method" value="POST">
+                <input type="hidden" id="categoryId" name="id">
+
+                <div class="space-y-4 mt-4">
+                    <div class="form-control">
+                        <label class="label" for="name">
+                            <span class="label-text">Category Name</span>
+                        </label>
+                        <input type="text" id="name" name="name" class="input input-bordered w-full"
+                            required>
+                    </div>
+
+                    <div class="form-control w-full">
+                        <label class="label" for="description">
+                            <span class="label-text">Description</span>
+                        </label>
+                        <textarea id="description" name="description" class="textarea textarea-bordered h-24"></textarea>
+                    </div>
+
+                    <div class="flex items-center space-x-4">
+                        <div class="form-control">
+                            <label class="label cursor-pointer">
+                                <span class="label-text">Active</span>
+                                <input type="checkbox" id="is_active" name="is_active" class="toggle toggle-primary"
+                                    checked>
+                            </label>
+                        </div>
+
+                        <div class="form-control w-full max-w-xs">
+                            <label class="label" for="position">
+                                <span class="label-text">Position</span>
+                            </label>
+                            <input type="number" id="position" name="position" class="input input-bordered"
+                                min="0">
+                        </div>
+                    </div>
+
+                    <div class="divider">SEO Settings</div>
+
+                    <div class="form-control">
+                        <label class="label" for="meta_title">
+                            <span class="label-text">Meta Title</span>
+                        </label>
+                        <input type="text" id="meta_title" name="meta_title" class="input input-bordered w-full">
+                    </div>
+
+                    <div class="form-control">
+                        <label class="label" for="meta_description">
+                            <span class="label-text">Meta Description</span>
+                        </label>
+                        <textarea id="meta_description" name="meta_description" class="textarea textarea-bordered h-24"></textarea>
+                    </div>
+                </div>
+
+                <div class="modal-action">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="button" onclick="categoryModal.close()" class="btn">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
 </x-app-layout>
+
+@section('scripts')
+    <script>
+        const categoryModal = document.getElementById('categoryModal');
+        const categoryForm = document.getElementById('categoryForm');
+        const modalTitle = document.getElementById('modalTitle');
+        const formMethod = document.getElementById('formMethod');
+        const categoryId = document.getElementById('categoryId');
+
+        function editCategory(category) {
+            modalTitle.textContent = 'Edit Category';
+            formMethod.value = 'PUT';
+            categoryId.value = category.id;
+
+            // Fill form with category data
+            document.getElementById('name').value = category.name;
+            document.getElementById('description').value = category.description || '';
+            document.getElementById('is_active').checked = category.is_active;
+            document.getElementById('position').value = category.position;
+            document.getElementById('meta_title').value = category.meta_title || '';
+            document.getElementById('meta_description').value = category.meta_description || '';
+
+            // Set form action
+            categoryForm.action = `/admin/categories/${category.id}`;
+
+            categoryModal.showModal();
+        }
+
+        // Reset form for new category
+        categoryModal.addEventListener('close', () => {
+            if (formMethod.value === 'PUT') {
+                modalTitle.textContent = 'Add New Category';
+                formMethod.value = 'POST';
+                categoryId.value = '';
+                categoryForm.reset();
+                categoryForm.action = '/admin/categories';
+            }
+        });
+
+        // Initialize form action for new category
+        categoryForm.action = '/admin/categories';
+    </script>
+@endsection

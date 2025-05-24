@@ -2,10 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Category extends Model
@@ -15,40 +13,36 @@ class Category extends Model
         'name',
         'slug',
         'description',
-        'parent_id',
         'is_active',
-        'order'
+        'position',
+        'meta_title',
+        'meta_description'
+    ];
+    protected $cast = [
+        'is_active' => 'boolean'
     ];
 
-    protected $casts = [
-        'is_active' => 'boolean',
-    ];
 
-    // relational
-    public function parent(): BelongsTo
+    public static function boot()
     {
-        return $this->belongsTo(Category::class, 'parent_id');
-    }
-    public function children(): HasMany
-    {
-        return $this->hasMany(Category::class, 'parent_id')->orderBy('order');
-    }
-    public function scopeActive(Builder $query): Builder
-    {
-        return $query->where('is_active', true);
-    }
-    public function scopeRoot(Builder $query): Builder
-    {
-        return $query->whereNull('parent_id');
-    }
-    protected static function booted()
-    {
+        parent::boot();
         static::creating(function ($category) {
-            $category->slug = $category->slug ?? str($category->name)->slug();
+            $category->slug = $category->generateSlug($category->name);
         });
-
         static::updating(function ($category) {
-            $category->slug = str($category->name)->slug();
+            if ($category->isDirty('name')) {
+                $category->slug = $category->generateSlug($category->name);
+            }
         });
+    }
+    // generate slug
+    public function generateSlug($name)
+    {
+        $slug = Str::slug($name);
+        // check if slug exist
+        $count = static::whereRaw("slug RLIKE '^{$slug}(-[0-9]+)?$'")
+            ->where('id', '!=', $this->id ?? 0)
+            ->count();
+        return $count ? "{$slug}-{$count}" : $slug;
     }
 }
